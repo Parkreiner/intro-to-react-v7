@@ -1,10 +1,6 @@
-function Pet(props) {
-  return React.createElement("div", null, [
-    React.createElement("h1", null, props.name),
-    React.createElement("h2", null, props.species),
-    React.createElement("h2", null, props.breed),
-  ]);
-}
+import React from "react";
+import { render } from "react-dom";
+import { Pet } from "./pet";
 
 function App() {
   return React.createElement("div", null, [
@@ -27,4 +23,4 @@ function App() {
   ]);
 }
 
-ReactDOM.render(React.createElement(App), document.getElementById("root"));
+render(React.createElement(App), document.getElementById("root"));
