@@ -1,19 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useBreedList from "./useBreedList";
+import Pet from "./Pet";
 
-const ALL_SPECIES = Object.freeze(["bird", "cat", "dog", "elephant", "ferret"]);
+const ANIMALS = ["bird", "cat", "dog", "rabbit", "reptile"];
 
 const SearchParams = () => {
-  const [location, setLocation] = useState("");
-  const [species, setSpecies] = useState("");
+  const [location, setLocation] = useState("Indian Head");
+  const [animal, setAnimal] = useState("");
   const [breed, setBreed] = useState("");
+  const [pets, setPets] = useState([]);
+  const [breeds] = useBreedList(animal);
 
-  const availableBreeds = ["poodle"];
+  useEffect(() => {
+    requestPets();
+  }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="search-params">
       <form>
         <label htmlFor="location">
-          Location: {location}
+          Location
           <input
             id="location"
             value={location}
@@ -22,39 +28,53 @@ const SearchParams = () => {
           />
         </label>
 
-        <label htmlFor="species">
-          What kind of animal would you like?
-          <select id="species" value={species} onChange={update} onBlur={update}>
+        <label htmlFor="animal">
+          Animal
+          <select id="animal" value={animal} onChange={handleChangeBlur} onBlur={handleChangeBlur}>
             <option />
-            {ALL_SPECIES.map((species) => (
-              <option key={species} value={species}>
-                {species}
-              </option>
-            ))}
+            {ANIMALS.map(toOption)}
           </select>
         </label>
 
         <label htmlFor="breed">
-          What kind of breed would you like?
-          <select id="breed" value={breed} onChange={update} onBlur={update}>
+          Breed
+          <select id="breed" value={breed} onChange={handleChangeBlur} onBlur={handleChangeBlur}>
             <option />
-            {availableBreeds.map((element) => (
-              <option key={element} value={element}>
-                {element}
-              </option>
-            ))}
+            {breeds.map(toOption)}
           </select>
         </label>
 
         <button>Submit</button>
       </form>
+
+      {pets.map(({ name, animal, breed, id }) => (
+        <Pet name={name} animal={animal} breed={breed} key={id} />
+      ))}
     </div>
   );
 
-  function update(event) {
-    setSpecies(event.target.value);
+  ////////// Start of internal helpers
+
+  function handleChangeBlur(event) {
+    setAnimal(event.target.value);
     setBreed("");
   }
+
+  async function requestPets() {
+    const url = `http://pets-v2.dev-apis.com/pets?animal=${animal}&location=${location}&breed=${breed}`;
+
+    const response = await fetch(url);
+    const json = await response.json();
+    setPets(json.pets);
+  }
 };
+
+function toOption(animalOrBreed) {
+  return (
+    <option key={animalOrBreed} value={animalOrBreed}>
+      {animalOrBreed}
+    </option>
+  );
+}
 
 export default SearchParams;
