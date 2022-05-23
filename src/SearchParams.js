@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import useBreedList from "./useBreedList";
-import Pet from "./Pet";
+import Results from "./Results";
 
 const ANIMALS = ["bird", "cat", "dog", "rabbit", "reptile"];
 
 const SearchParams = () => {
-  const [location, setLocation] = useState("Indian Head");
+  const [location, setLocation] = useState("");
   const [animal, setAnimal] = useState("");
   const [breed, setBreed] = useState("");
   const [pets, setPets] = useState([]);
@@ -17,7 +17,12 @@ const SearchParams = () => {
 
   return (
     <div className="search-params">
-      <form>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          requestPets();
+        }}
+      >
         <label htmlFor="location">
           Location
           <input
@@ -30,7 +35,7 @@ const SearchParams = () => {
 
         <label htmlFor="animal">
           Animal
-          <select id="animal" value={animal} onChange={handleChangeBlur} onBlur={handleChangeBlur}>
+          <select id="animal" value={animal} onChange={animalChangeBlur} onBlur={animalChangeBlur}>
             <option />
             {ANIMALS.map(toOption)}
           </select>
@@ -38,7 +43,7 @@ const SearchParams = () => {
 
         <label htmlFor="breed">
           Breed
-          <select id="breed" value={breed} onChange={handleChangeBlur} onBlur={handleChangeBlur}>
+          <select id="breed" value={breed} onChange={breedChangeBlur} onBlur={breedChangeBlur}>
             <option />
             {breeds.map(toOption)}
           </select>
@@ -47,17 +52,19 @@ const SearchParams = () => {
         <button>Submit</button>
       </form>
 
-      {pets.map(({ name, animal, breed, id }) => (
-        <Pet name={name} animal={animal} breed={breed} key={id} />
-      ))}
+      <Results pets={pets} />
     </div>
   );
 
   ////////// Start of internal helpers
 
-  function handleChangeBlur(event) {
+  function animalChangeBlur(event) {
     setAnimal(event.target.value);
     setBreed("");
+  }
+
+  function breedChangeBlur(event) {
+    setBreed(event.target.value);
   }
 
   async function requestPets() {
@@ -69,10 +76,10 @@ const SearchParams = () => {
   }
 };
 
-function toOption(animalOrBreed) {
+function toOption(optionText) {
   return (
-    <option key={animalOrBreed} value={animalOrBreed}>
-      {animalOrBreed}
+    <option key={optionText} value={optionText}>
+      {optionText}
     </option>
   );
 }

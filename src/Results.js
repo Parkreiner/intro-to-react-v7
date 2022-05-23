@@ -1,22 +1,48 @@
 import Pet from "./Pet";
 
-const Results = ({ pets }) => {
-  const innerContent = pets.length === 0 ? <h1>No pets founds</h1> : pets.map(toPetComponent);
-  return <div>{innerContent}</div>;
+// Apparently this is how React devs write a lot React code. I hate it.
+//eslint-disable-next-line no-unused-vars
+const ResultsByAReactDev = ({ pets }) => {
+  return (
+    <div>
+      {pets.length ? (
+        <h1>No pets found.</h1>
+      ) : (
+        pets.map(({ name, animal, breed, id, city, state }) => (
+          <Pet
+            name={name}
+            animal={animal}
+            breed={breed}
+            key={id}
+            id={id}
+            location={`${(city, state)}`}
+          />
+        ))
+      )}
+    </div>
+  );
 };
 
-function toPetComponent(pet) {
-  return (
-    <Pet
-      name={pet.name}
-      animal={pet.animal}
-      breed={pet.breed}
-      key={pet.id}
-      images={pet.images}
-      location={`${pet.city}, ${pet.state}`}
-      id={pet.id}
-    />
-  );
-}
+const Results = ({ pets }) => {
+  const innerContent = pets.length ? pets.map(toPetComponent) : <h1>No pets found.</h1>;
+  return <div>{innerContent}</div>;
+
+  ////////// Start of internal helpers
+
+  function toPetComponent({ name, animal, breed, id, city, state, images }) {
+    const location = `${city}, ${state}`;
+    return (
+      <Pet
+        name={name}
+        animal={animal}
+        breed={breed}
+        key={id}
+        location={location}
+        id={id}
+        images={images}
+      />
+    );
+  }
+};
 
 export default Results;

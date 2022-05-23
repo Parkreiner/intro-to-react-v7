@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useDebugValue } from "react";
 
 const localCache = {};
 
@@ -6,6 +6,7 @@ export default function useBreedList(animal) {
   // Intended to be used as enumerated type; possibilities are unloaded, loading, or loaded
   const [status, setStatus] = useState("unloaded");
   const [breedList, setBreedList] = useState([]);
+  useDebugValue(`Cache values loaded: ${Object.keys(localCache).length}`);
 
   useEffect(() => {
     if (!animal) {
